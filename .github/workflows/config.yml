@@ -1,7 +1,20 @@
 name: Build and push image to ECR
 on: 
   push:
+<<<<<<< HEAD
     branches: [uat]
+=======
+    branches: [dev]
+env:
+  
+  ECR_REPOSITORY: image-slider           
+  ECS_SERVICE: sample-svc-dev                 
+  ECS_CLUSTER: sample-cluster                 
+  ECS_TASK_DEFINITION: .aws/task-definition.json 
+  CONTAINER_NAME: image-slider       
+
+
+>>>>>>> dev
 jobs:
   build:
     name: Build Docker Image
@@ -19,10 +32,33 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
     - name: Build, tag, and push image to Amazon ECR
+      id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+<<<<<<< HEAD
         ECR_REPOSITORY: image-slider
         IMAGE_TAG: uat
+=======
+        //ECR_REPOSITORY: image-slider
+        IMAGE_TAG: dev
+>>>>>>> dev
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true    
