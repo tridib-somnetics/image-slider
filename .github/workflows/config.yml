@@ -1,7 +1,7 @@
 name: Build and push image to ECR
 on: 
   push:
-    branches: [prod]
+    branches: [main]
 env:
   
   ECR_REPOSITORY: image-slider           
