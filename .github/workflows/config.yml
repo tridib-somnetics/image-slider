@@ -1,20 +1,16 @@
 name: Build and push image to ECR
 on: 
   push:
-<<<<<<< HEAD
     branches: [uat]
-=======
-    branches: [dev]
 env:
   
   ECR_REPOSITORY: image-slider           
-  ECS_SERVICE: sample-svc-dev                 
+  ECS_SERVICE: sample-svc-uat                 
   ECS_CLUSTER: sample-cluster                 
   ECS_TASK_DEFINITION: .aws/task-definition.json 
   CONTAINER_NAME: image-slider       
 
 
->>>>>>> dev
 jobs:
   build:
     name: Build Docker Image
@@ -35,13 +31,8 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-<<<<<<< HEAD
         ECR_REPOSITORY: image-slider
         IMAGE_TAG: uat
-=======
-        //ECR_REPOSITORY: image-slider
-        IMAGE_TAG: dev
->>>>>>> dev
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
