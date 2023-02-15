@@ -7,7 +7,7 @@ env:
   ECR_REPOSITORY: image-slider           
   ECS_SERVICE: sample-svc-dev                 
   ECS_CLUSTER: sample-cluster                 
-  ECS_TASK_DEFINITION: sample-task-dev 
+  ECS_TASK_DEFINITION: .aws/task-definition.json 
   CONTAINER_NAME: image-slider       
 
 
@@ -28,9 +28,10 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
     - name: Build, tag, and push image to Amazon ECR
+      id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: image-slider
+        //ECR_REPOSITORY: image-slider
         IMAGE_TAG: dev
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
